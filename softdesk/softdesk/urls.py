@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from authentification.views import UserViewSet
 
 router = routers.SimpleRouter()
-router.register('users', UserViewSet, basename='users')
+router.register('', UserViewSet, basename='users')
 
 urlpatterns = [
     path('', include(router.urls)),
