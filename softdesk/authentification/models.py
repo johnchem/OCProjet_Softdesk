@@ -31,6 +31,7 @@ class UserManager(BaseUserManager):
 
 class User(auth_models.AbstractUser):
     """Models utilisateurs utiliser pour gérer l'authentification"""
+    username = None
     
     user_id = models.AutoField(primary_key=True)
     first_name = models.CharField(blank=False, max_length=50)
