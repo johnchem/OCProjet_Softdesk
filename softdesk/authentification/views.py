@@ -22,7 +22,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return User.objects.all()
 
     @action(detail=False, methods=["post"], url_path="signup", url_name='signup')
-    def CreateNewUser(self, request, pk=None):
+    def create_new_user(self, request, pk=None):
         serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -30,7 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False, methods=["get"], url_path="users", url_name="users")
-    def ListUsers(self, request, pk=None):
+    def list_users(self, request, pk=None):
         queryset = self.get_queryset()
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)

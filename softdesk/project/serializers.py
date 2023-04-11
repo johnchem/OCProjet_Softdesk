@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from project.models import Contributor, Project
+
 from authentification.models import User
+from project.models import Contributor, Project, TYPE_PROJECT
 
 class ContributorSerializer(serializers.ModelSerializer):
     Permission = serializers.CharField()
@@ -20,18 +21,23 @@ class ContributorSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    author_user_id = serializers.IntegerField()
+    role = serializers.ChoiceField(
+        choices=TYPE_PROJECT,
+        style={'base_template':'radio.html'}
+    )
+    # author_user_id = serializers.SerializerMethodField()
 
     class Meta:
         models = Project
-        fields = ['project_id', 'title', 'description', 'type', 'author_user_id']
+        fields = ['project_id', 'title', 'description', 'type']
 
-    def create_project(self, author_id):
-        project = Project(
-            title = self.validated_data['title'],
-            description = self.validated_data['description'],
-            type = self.validated_data['type'],
-            author_user_id = author_id,
-        )
-        project.save()
+
+    # def create_project(self, author_id):
+    #     project = Project(
+    #         title = self.validated_data['title'],
+    #         description = self.validated_data['description'],
+    #         type = self.validated_data['type'],
+    #         author_user_id = author_id,
+    #     )
+    #     project.save()
 
