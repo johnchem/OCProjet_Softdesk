@@ -12,7 +12,7 @@ from project.serializers import (
 # Create your views here.
 class ProjectViewset(viewsets.ModelViewSet):
 
-    serializer_class = Project
+    serializer_class = ProjectSerializer
 
     def get_queryset(self):
         return Project.objects.all()

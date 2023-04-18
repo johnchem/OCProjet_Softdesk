@@ -24,6 +24,20 @@ TYPE_PROJECT = [
     (MOBILE_ANDROID,'Android'),
 ]
 
+
+class AuthorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(role="A")
+
+
+class ContributorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(role="C")
+    
+class ResponsibleManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(role="R")
+
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=64)
@@ -32,6 +46,12 @@ class Project(models.Model):
         max_length=5,
         choices=TYPE_PROJECT,
         )
+    
+    @property
+    def author_user_id(self):
+        queryset = User.objects.filter(contributor__project_id=self.project_id)
+        
+        return queryset.data
 
 
 class Contributor(models.Model):
