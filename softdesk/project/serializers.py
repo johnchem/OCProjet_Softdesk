@@ -35,14 +35,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['project_id', 'title', 'description', 'type', 'author_user_id']
 
     def get_author_user_id(self, instance):
-        print(instance.project_id)
         queryset = Contributor.objects.filter(project_id=instance.project_id)
-        print(queryset)
-        User.objects.filter(contributor__project_id=instance.project_id)
-        print(queryset)
-        q1 = queryset.filter(contributor__role=AUTHOR)
-        print(q1)
-        serializers = UserSerializer(q1)
+        q1 = list(queryset.filter(role=AUTHOR))
+        author = q1[0]
+        serializers = UserSerializer(author.user_id)
 
         return serializers.data
         
