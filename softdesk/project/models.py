@@ -46,12 +46,15 @@ class Project(models.Model):
         max_length=5,
         choices=TYPE_PROJECT,
         )
+    author_user_id = models.ForeignKey(
+        to=User,
+        related_name="author",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True)
     
-    @property
-    def author_user_id(self):
-        queryset = User.objects.filter(contributor__project_id=self.project_id)
-        
-        return queryset.data
+    def __str__(self):
+        return f"{self.title} - {self.author_user_id}"
 
 
 class Contributor(models.Model):

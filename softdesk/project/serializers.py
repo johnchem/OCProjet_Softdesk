@@ -28,28 +28,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         choices=TYPE_PROJECT,
         style={'base_template':'radio.html'}
     )
-    author_user_id = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Project
         fields = ['project_id', 'title', 'description', 'type', 'author_user_id']
-
-    def get_author_user_id(self, instance):
-        queryset = Contributor.objects.filter(project_id=instance.project_id)
-        q1 = list(queryset.filter(role=AUTHOR))
-        author = q1[0]
-        serializers = UserSerializer(author.user_id)
-
-        return serializers.data
         
-
-
-    # def create_project(self, author_id):
-    #     project = Project(
-    #         title = self.validated_data['title'],
-    #         description = self.validated_data['description'],
-    #         type = self.validated_data['type'],
-    #         author_user_id = author_id,
-    #     )
-    #     project.save()
-
+    def create(self, validated_data):
+        return Project.objects.create(**validated_data)
