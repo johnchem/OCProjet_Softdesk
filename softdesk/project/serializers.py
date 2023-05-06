@@ -8,30 +8,36 @@ from project.models import AUTHOR
 
 
 class ContributorSerializer(serializers.ModelSerializer):
-    Permission = serializers.CharField()
+    permission = serializers.SerializerMethodField('get_permission')
     class Meta:
         model = Contributor
-        fields = ['user_id', 'project_id', 'permission', 'role']
-    
-    
-    def add_contributor(self, project_id, email, role):
-        user = User.objects.filter(email = email)
-        contributor = Contributor(
-            user_id = user['user_id'],
-            project_id = project_id,
-            role = self.validated_data['role']
-            )
-        contributor.save()
+        fields = ['user_id', 'project_id', 'role', 'permission']
+        
+    def get_permission(self, instance):
+        if instance.role == "A":
+            return "CRUD"
+        if instance.role == "R":
+            return "RU"
+        if instance.role == "C":
+            return "R"
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     type = serializers.ChoiceField(
         choices=TYPE_PROJECT,
         style={'base_template':'radio.html'}
     )
+
+    contributor = ContributorSerializer(many=True)
     
     class Meta:
         model = Project
-        fields = ['project_id', 'title', 'description', 'type', 'author_user_id']
-        
+        fields = ['project_id', 'title', 'description', 'type', 'author_user_id', 'contributor']
+
     def create(self, validated_data):
-        return Project.objects.create(**validated_data)
+        author = self.context['request'].user
+        project = Project.objects.create(
+            author_user_id=author,
+            **validated_data
+            )
+        return project
