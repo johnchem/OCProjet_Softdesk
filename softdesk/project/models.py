@@ -48,7 +48,7 @@ class Project(models.Model):
         )
     author_user_id = models.ForeignKey(
         to=User,
-        related_name="author",
+        related_name="project_author",
         on_delete=models.CASCADE,
         blank=True,
         null=True)

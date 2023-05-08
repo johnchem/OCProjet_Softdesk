@@ -25,12 +25,22 @@ router = routers.SimpleRouter()
 router.register('users', UserViewSet, basename='users')
 router.register('projects', ProjectViewset, basename='projects')
 router.register('admin/projects', AdminProjectViewset, basename='admin_projects')
+router.register('projects')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', TokenObtainPairView.as_view(), name='obtain_tokens'),
     path('login/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    # path('/signup/', ),
+    # path('/projects/'),
+    # path('/projects/{id}/'),
+    # path('/projects/{id}/users/'),
+    # path('/projects/{id}/users/{id}'),
+    # path('/projects/{id}/issues/'),
+    # path('/projects/{id}/issues/{id}'),
+    # path('/projects/{id}/issues/{id}/comments/'),
+    # path('/projects/{id}/issues/{id}/comments/{id}'),
 ]
 
 # urlpatterns += router.urls

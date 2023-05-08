@@ -30,7 +30,6 @@ class ProjectViewset(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
         project = serializer.save()
-        print(request.user)
         contributor = ContributorSerializer(
             data={"user_id":request.user.user_id,
             "project_id":project.project_id,

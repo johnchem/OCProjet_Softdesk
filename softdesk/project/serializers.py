@@ -3,8 +3,8 @@ from rest_framework import serializers
 from authentification.models import User
 from authentification.serializers import UserSerializer
 
-from project.models import Contributor, Project, TYPE_PROJECT
-from project.models import AUTHOR
+from project.models import Contributor, Project
+from project.models import AUTHOR, TYPE_PROJECT
 
 
 class ContributorSerializer(serializers.ModelSerializer):
