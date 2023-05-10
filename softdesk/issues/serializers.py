@@ -6,4 +6,4 @@ class IssuesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Issues
-        field=["title", "desc", "tag", "priority", "statut", "assignee_user_id"]
+        fields=["title", "desc", "tag", "priority", "status"]

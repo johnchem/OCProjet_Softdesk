@@ -1,4 +1,4 @@
-from rest_framework import viewset, status
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -8,23 +8,25 @@ from project.models import Project
 from authentification.models import User
 
 # Create your views here.
-class IssuesViewset(viewset.ModelViewSet):
+class IssuesViewset(viewsets.ModelViewSet):
     serializer_class = IssuesSerializer
     Permission_class = [IsAuthenticated]
 
     def get_queryset(self):
         return Issues.objects.all()
     
-    def create(self, request, pk):
-        project = Project.objects.get(pk=pk)
-        assignee = User.object.get(first_name=request.POST["assignee"])
+    def create(self, request, project_pk):
+        project = Project.objects.get(pk=project_pk)
+        print(request.POST)
+        assignee = User.objects.get(first_name=request.POST["assignee"])
+        print(assignee.user_id)
 
         serializer = IssuesSerializer(
             data=request.data,
             context={
                 'request':request,
-                'project_id':project["project_id"],
-                'assignee_user_id':assignee["user_id"],
+                'project_id':project.project_id,
+                'assignee_user_id':assignee.user_id,
                 },
         )
 

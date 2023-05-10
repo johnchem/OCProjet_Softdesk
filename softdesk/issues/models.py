@@ -5,6 +5,7 @@ from authentification.models import User
 
 
 class Issues(models.Model):
+    issues_id=models.AutoField(primary_key=True)
     title=models.CharField(max_length=64)
     desc=models.CharField(max_length=256)
     tag=models.CharField(max_length=128)
