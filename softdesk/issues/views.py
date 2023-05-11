@@ -18,8 +18,13 @@ class IssuesViewset(viewsets.ModelViewSet):
     def create(self, request, project_pk):
         project = Project.objects.get(pk=project_pk)
         print(request.POST)
-        assignee = User.objects.get(first_name=request.POST["assignee"])
-        print(assignee.user_id)
+        assignee = User.objects.get(first_name=request.POST.get('assignee'))
+        print(str(assignee.user_id))
+
+#
+# probléme lors de la creation de l'Issues. la présence de l'assignee 
+# n'est pas détecté par le validator
+#
 
         serializer = IssuesSerializer(
             data=request.data,

@@ -19,7 +19,6 @@ class Issues(models.Model):
         to=User,
         on_delete=models.CASCADE,
         related_name="issue_author"
-        
     )
     assignee_user_id=models.ForeignKey(
         to=User,
