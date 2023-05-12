@@ -29,7 +29,7 @@ class IssuesViewset(viewsets.ModelViewSet):
         serializer = IssuesSerializer(
             data=request.data,
             context={
-                'request':request,
+                'author_user_id':request.user.user_id,
                 'project_id':project.project_id,
                 'assignee_user_id':assignee.user_id,
                 },

@@ -20,9 +20,8 @@ class Issues(models.Model):
         on_delete=models.CASCADE,
         related_name="issue_author"
     )
-    assignee_user_id=models.ForeignKey(
+    assignee_user_id=models.ManyToManyField(
         to=User,
-        on_delete=models.CASCADE,
         related_name="responsible"
     )
     created_time=models.DateTimeField(

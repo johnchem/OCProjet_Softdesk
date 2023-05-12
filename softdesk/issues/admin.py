@@ -9,7 +9,7 @@ class IssuesForm(forms.ModelForm):
     class Meta:
         model=Issues
         fields=["title", "desc", "tag", "priority", "status", "project_id", "assignee_user_id"]
-
+        
 @admin.register(Issues)
 class IssuesAdmin(admin.ModelAdmin):
     class Meta:
