@@ -17,15 +17,13 @@ class IssuesViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         return Issues.objects.all()
         
-    def create(self, request, project_pk):
+    def create(self, request, project_pk=None):
         data = request.data.copy()
         data['project_id']=Project.objects.get(pk=project_pk).project_id
         data['author_user_id']=request.user.user_id
         data['assignee_user_id']=User.objects.get(
             first_name=request.POST.get('assignee')
             ).user_id
-
-        print(data)
         serializer = IssuesSerializer(
             data=data,
         )
@@ -36,7 +34,7 @@ class IssuesViewset(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    def update(self, request, pk, *args, **kwargs):
+    def update(self, request, project_pk=None, pk=None):
         try:
             issue = Issues.objects.get(pk=pk)
         except issue.DoesNotExist:
@@ -48,7 +46,7 @@ class IssuesViewset(viewsets.ModelViewSet):
         serializer.save(user=request.user)
         return Response(serializer.data)
     
-    def delete(self, request, pk, *args, **kwargs):
+    def delete(self, request, project_pk=None, pk=None):
         try:
             issue = Issues.objects.get(pk=pk)
             issue.delete()
