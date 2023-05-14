@@ -33,10 +33,12 @@ class AuthorManager(models.Manager):
 class ContributorManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(role="C")
-    
+
+
 class ResponsibleManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(role="R")
+
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)
@@ -48,7 +50,7 @@ class Project(models.Model):
         )
     author_user_id = models.ForeignKey(
         to=User,
-        related_name="project_author",
+        related_name="project_created",
         on_delete=models.CASCADE,
         blank=True,
         null=True)
@@ -61,7 +63,7 @@ class Contributor(models.Model):
     user_id = models.ForeignKey(
         to=User, 
         on_delete=models.CASCADE,
-        related_name="project"
+        related_name="member_of"
         )
     project_id = models.ForeignKey(
         to=Project,

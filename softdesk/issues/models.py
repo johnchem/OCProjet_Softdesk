@@ -12,17 +12,21 @@ class Issues(models.Model):
     priority=models.CharField(max_length=32)
     project_id=models.ForeignKey(
         to=Project,
-        on_delete=models.DO_NOTHING
+        on_delete=models.DO_NOTHING,
+        related_name="issue",
+        related_query_name="issues"
     )
     status=models.CharField(max_length=32)
     author_user_id=models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
-        related_name="issue_author"
+        related_name="issues_created"
     )
-    assignee_user_id=models.ManyToManyField(
+    assignee_user_id=models.ForeignKey(
         to=User,
-        related_name="responsible"
+        on_delete=models.DO_NOTHING,
+        related_name="responsible_of",
+        default='',
     )
     created_time=models.DateTimeField(
         auto_now_add=True
