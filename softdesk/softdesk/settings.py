@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "authentification",
     "project",
     "issues",
+    "comments",
 ]
 
 MIDDLEWARE = [
