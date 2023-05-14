@@ -35,3 +35,26 @@ class IssuesViewset(viewsets.ModelViewSet):
         
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def update(self, request, pk, *args, **kwargs):
+        try:
+            issue = Issues.objects.get(pk=pk)
+        except issue.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = IssuesSerializer(issue, data=request.data, partial=True)
+        # setting raise_exception=True in the serializer's is_valid method will raise exception on error. So you don't have implement extra logics
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data)
+    
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            issue = Issues.objects.get(pk=pk)
+            issue.delete()
+            return Response(status=status.HTTP_200_OK)
+        except issue.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(issue.errors, status=status.HTTP_204_NO_CONTENT)
+ 

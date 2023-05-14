@@ -58,7 +58,7 @@ class ProjectViewset(viewsets.ModelViewSet):
         try:
             project = Project.objects.get(pk=pk)
             project.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK)
         except project.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except:
