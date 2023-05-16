@@ -4,12 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from project.models import Project, Contributor
+from project.models import Project
+from project.models import ProjectSerializer, ContributorSerializer
 from project.models import AUTHOR
-from project.serializers import (
-    ProjectSerializer,
-    ContributorSerializer
-)
+
 
 # Create your views here.
 class ProjectViewset(viewsets.ModelViewSet):

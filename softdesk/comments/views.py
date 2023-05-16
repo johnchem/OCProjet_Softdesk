@@ -3,23 +3,16 @@ from rest_framework.response import Response
 
 from issues.models import Issues
 from authentification.models import User
-from comments.models import Comments
+from comments.models import Comments, CommentSerializer
 
-from comments.serializers import CommentsDetailSerializer, CommentsListSerializer
 
 # Create your views here.
 
 class CommentsViewset(viewsets.ModelViewSet):
-    serializer_class=CommentsDetailSerializer
-    list_serializer_class=CommentsListSerializer
+    serializer_class=CommentSerializer
 
     def get_queryset(self):
         return Comments.objects.all()
-    
-    def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
-            return self.list_serializer_class
-        return super().get_serializer_class()
     
     def create(self, request, project_pk=None, issue_pk=None):
         data = request.data.copy()
@@ -41,7 +34,6 @@ class CommentsViewset(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.serializer_class(comment, data=request.data, partial=True)
-        # setting raise_exception=True in the serializer's is_valid method will raise exception on error. So you don't have implement extra logics
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
         return Response(serializer.data)
