@@ -11,7 +11,6 @@ from project.models import AUTHOR
 
 # Create your views here.
 class ProjectViewset(viewsets.ModelViewSet):
-
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
