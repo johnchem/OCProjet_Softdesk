@@ -2,6 +2,7 @@ from django.db import models
 from rest_framework import serializers
 
 from authentification.models import User
+from project.models import Contributor
 
 # Create your models here.
 WEB_BACK = 'BACK'
@@ -34,8 +35,8 @@ class Project(models.Model):
         max_length=5,
         choices=TYPE_PROJECT,
         )
-    author_user_id = models.ForeignKey(
-        to=User,
+    author_user_id = models.ManyToManyField(
+        to=Contributor,
         related_name="project_created",
         on_delete=models.CASCADE,
         blank=True,
