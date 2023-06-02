@@ -60,16 +60,14 @@ class Project(models.Model):
 class Contributor(models.Model):
     user_id = models.ForeignKey(
         to=User, 
-        related_name="contributor", 
         on_delete=models.CASCADE,
-        to_field="user_id"
+        related_name="project"
         )
     project_id = models.ForeignKey(
         to=Project,
-        related_name="project",
         on_delete=models.CASCADE,
-        to_field="project_id"
-    )
+        related_name="contributor"
+        )
     role = models.CharField(
         max_length=1,
         choices=FUNCTION,
