@@ -73,8 +73,18 @@ urlpatterns = [
             'put':'update',
             'delete':'delete',
         })),
-    # path('projects/{id}/issues/{id}/comments/', CommentsViewset.as_view()),
-    # path('projects/{id}/issues/{id}/comments/{id}', CommentsViewset.as_view()),
+    path('projects/<int:project_pk>/issues/<int:pk>/comments/', CommentsViewset.as_view(
+        {
+            'post':'create',
+            'get':'list',
+        })),
+    path('projects/<int:project_pk>/issues/<int:issues_pk>/comments/<int:pk>', CommentsViewset.as_view(
+        {
+            'put':'update',
+            'delete':'delete',
+            'get':'retrieve',
+        }
+    )),
 ]
 
 # urlpatterns += router.urls

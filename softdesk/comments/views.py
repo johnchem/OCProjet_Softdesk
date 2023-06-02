@@ -12,39 +12,89 @@ class CommentsViewset(viewsets.ModelViewSet):
     serializer_class=CommentSerializer
 
     def get_queryset(self):
-        return Comments.objects.all()
+        issues_pk = self.kwargs["issues_pk"] if self.kwargs["issues_pk"] else self.kwargs["pk"]
+        return Comments.objects.filter(issues_id=issues_pk)
     
-    def create(self, request, project_pk=None, issue_pk=None):
-        data = request.data.copy()
-        data['issues_id']=Issues.objects.get(pk=issue_pk).issues_id
-        data['author_user_id']=request.user.user_id
+    def create(self, request, project_pk=None, pk=None):
+        try:
+            issue = Issues.objects.get(pk=pk)
 
-        serializer=self.serializer_class(data=data)
+            if not issue.project_id.project_id == project_pk:
+                return Response(
+                    "le problème n'appartient pas à ce projet",
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
 
-        if not serializer.is_valid():
-             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            data = request.data.copy()
+            data['issues_id']=issue.issues_id
+            data['author_user_id']=request.user.user_id
+
+            serializer=self.serializer_class(data=data)
+
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    def update(self, request, project_pk=None, issue_pk=None, pk=None):
-        try:
-            comment = Comments.objects.get(pk=pk)
-        except comment.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        except issue.DoesNotExist:
+            return Response(
+                "le problème n'existe pas",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-        serializer = self.serializer_class(comment, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)
-        return Response(serializer.data)
-    
-    def delete(self, request, project_pk=None, issue_pk=None, pk=None):
+    def update(self, request, project_pk=None, issues_pk=None, pk=None):
         try:
             comment = Comments.objects.get(pk=pk)
-            comment.delete()
-            return Response(status=status.HTTP_200_OK)
+            issue = comment.issues_id
+
+            if not comment.issues_id.issues_id == issues_pk:
+                return Response(
+                    "le commentaire n'appartient pas à ce problème",
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            if not issue.project_id.project_id == project_pk:
+                return Response(
+                    "le problème n'appartient pas à ce projet",
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            serializer = self.serializer_class(comment, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         except comment.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        except:
-            return Response(comment.errors, status=status.HTTP_204_NO_CONTENT)
- 
+            return Response(
+                "le commentaire n'existe pas",
+                status=status.HTTP_404_NOT_FOUND
+                )
+
+    def delete(self, request, project_pk=None, issues_pk=None, pk=None):
+        try:
+            comment = Comments.objects.get(pk=pk)
+            issue = comment.issues_id
+
+            if not comment.issues_id.issues_id == issues_pk:
+                return Response(
+                    "le commentaire n'appartient pas à ce problème",
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            if not issue.project_id.project_id == project_pk:
+                return Response(
+                    "le problème n'appartient pas à ce projet",
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            comment.delete()
+            return Response(
+                "le commentaire est supprimé",
+                status=status.HTTP_200_OK
+                )
+        except comment.DoesNotExist:
+            return Response(
+                "le commentaire n'existe pas",
+                status=status.HTTP_404_NOT_FOUND
+                )
