@@ -14,7 +14,7 @@ from authentification.serializers import (
 )
 
 # Create your views here.
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewset(viewsets.ModelViewSet):
     
     serializer_class = UserSerializer
 

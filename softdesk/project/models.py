@@ -67,10 +67,13 @@ class Contributor(models.Model):
 
 class ContributorSerializer(serializers.ModelSerializer):
     permission = serializers.SerializerMethodField('get_permission')
+    
+    # project = ProjectSerializer()
+    
     class Meta:
         model = Contributor
         fields = ['user_id', 'project_id', 'role', 'permission']
-        
+
     def get_permission(self, instance):
         if instance.role == "A":
             return "CRUD"
@@ -86,7 +89,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         style={'base_template':'radio.html'}
     )
 
-    # contributor = ContributorSerializer(many=True)
+    contributor = ContributorSerializer(many=True)
     
     class Meta:
         model = Project
