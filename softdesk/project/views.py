@@ -43,6 +43,18 @@ class ProjectViewset(viewsets.ModelViewSet):
         contributor.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    def update(self, request, pk):
+        try:
+            project = Project.objects.get(pk=pk)
+        except project.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ProjectSerializer(project, data=request.data, partial=True)
+        # setting raise_exception=True in the serializer's is_valid method will raise exception on error. So you don't have implement extra logics
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data)
+    
 class AdminProjectViewset(viewsets.ModelViewSet):
 
     serializer_class = ProjectSerializer
