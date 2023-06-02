@@ -1,4 +1,6 @@
 from django.db import models
+from rest_framework import serializers
+
 from authentification.models import User
 
 # Create your models here.
@@ -24,20 +26,6 @@ TYPE_PROJECT = [
     (MOBILE_ANDROID,'Android'),
 ]
 
-
-class AuthorManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(role="A")
-
-
-class ContributorManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(role="C")
-    
-class ResponsibleManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(role="R")
-
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=64)
@@ -48,7 +36,7 @@ class Project(models.Model):
         )
     author_user_id = models.ForeignKey(
         to=User,
-        related_name="author",
+        related_name="project_created",
         on_delete=models.CASCADE,
         blank=True,
         null=True)
@@ -61,7 +49,7 @@ class Contributor(models.Model):
     user_id = models.ForeignKey(
         to=User, 
         on_delete=models.CASCADE,
-        related_name="project"
+        related_name="member_of"
         )
     project_id = models.ForeignKey(
         to=Project,
@@ -76,3 +64,38 @@ class Contributor(models.Model):
 
     class Meta:
         unique_together = ('user_id', 'project_id')
+
+class ContributorSerializer(serializers.ModelSerializer):
+    permission = serializers.SerializerMethodField('get_permission')
+    class Meta:
+        model = Contributor
+        fields = ['user_id', 'project_id', 'role', 'permission']
+        
+    def get_permission(self, instance):
+        if instance.role == "A":
+            return "CRUD"
+        if instance.role == "R":
+            return "RU"
+        if instance.role == "C":
+            return "R"
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    type = serializers.ChoiceField(
+        choices=TYPE_PROJECT,
+        style={'base_template':'radio.html'}
+    )
+
+    # contributor = ContributorSerializer(many=True)
+    
+    class Meta:
+        model = Project
+        fields = ['project_id', 'title', 'description', 'type', 'author_user_id', 'contributor']
+
+    def create(self, validated_data):
+        author = self.context['request'].user
+        project = Project.objects.create(
+            author_user_id=author,
+            **validated_data
+            )
+        return project

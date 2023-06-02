@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "authentification",
     "project",
+    "issues",
+    "comments",
 ]
 
 MIDDLEWARE = [

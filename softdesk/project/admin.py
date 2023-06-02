@@ -22,6 +22,3 @@ class ProjectAdmin(admin.ModelAdmin):
 class ContributorAdmin(admin.ModelAdmin):
     form = ContributorForm
     list_display = ('user_id', 'project_id', 'role')
-
-# admin.site.register(Project)
-# admin.site.register(Contributor)

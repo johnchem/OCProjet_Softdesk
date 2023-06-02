@@ -4,16 +4,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from project.models import Project, Contributor
+from project.models import Project
+from project.models import ProjectSerializer, ContributorSerializer
 from project.models import AUTHOR
-from project.serializers import (
-    ProjectSerializer,
-    ContributorSerializer
-)
+
 
 # Create your views here.
 class ProjectViewset(viewsets.ModelViewSet):
-
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
@@ -30,7 +27,6 @@ class ProjectViewset(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
         project = serializer.save()
-        print(request.user)
         contributor = ContributorSerializer(
             data={"user_id":request.user.user_id,
             "project_id":project.project_id,
@@ -59,7 +55,7 @@ class ProjectViewset(viewsets.ModelViewSet):
         try:
             project = Project.objects.get(pk=pk)
             project.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK)
         except project.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except:
