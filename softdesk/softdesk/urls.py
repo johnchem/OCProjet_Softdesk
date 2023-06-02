@@ -19,14 +19,18 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from authentification.views import UserViewSet
+from project.views import ProjectViewset, AdminProjectViewset
 
 router = routers.SimpleRouter()
-router.register(r'', UserViewSet, basename='users')
+router.register('users', UserViewSet, basename='users')
+router.register('projects', ProjectViewset, basename='projects')
+router.register('admin/projects', AdminProjectViewset, basename='admin_projects')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', TokenObtainPairView.as_view(), name='obtain_tokens'),
     path('login/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
+    path('api/', include(router.urls))
 ]
 
-urlpatterns += router.urls
+# urlpatterns += router.urls

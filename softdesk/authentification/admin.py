@@ -12,13 +12,6 @@ from authentification.models import User
 
 # Register your models here.
 
-# User = get_user_model()
-
-# @admin.register(User)
-# class UserAdmin(auth_admin.UserAdmin):
-#     """Configuration des utilisateurs sur le site d'administration."""
-#     pass
-
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
