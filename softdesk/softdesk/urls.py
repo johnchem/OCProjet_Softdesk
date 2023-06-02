@@ -23,31 +23,16 @@ from project.views import ProjectViewset, ProjectUserViewset, AdminProjectViewse
 from issues.views import IssuesViewset
 from comments.views import CommentsViewset
 
-# router = routers.SimpleRouter()
-# router.register('users', UserViewSet, basename='users')
-# router.register('projects', ProjectViewset, basename='projects')
-# router.register('admin/projects', AdminProjectViewset, basename='admin_projects')
-
-# project_router = routers.NestedSimpleRouter(router, r'projects', lookup='project')
-# project_router.register(r'issues', IssuesViewset, basename="issues")
-
-# issues_router = routers.NestedSimpleRouter(project_router, r'issues', lookup='issue')
-# issues_router.register(r'comments', CommentsViewset, basename='comments')
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup/', UserViewset.as_view({'post': 'create_new_user'})),
     path('login/', TokenObtainPairView.as_view(), name='obtain_tokens'),
     path('login/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
-    # path('api/', include(router.urls)),
-    # path('api/', include(project_router.urls)),
-    # path('api/', include(issues_router.urls)),
     path('projects/', ProjectViewset.as_view(
         {
             'post': 'create',
             'get': 'list',
          })),
-    # path('projects/', ProjectViewset.as_view({})),
     path('projects/<int:pk>/', ProjectViewset.as_view(
         {
             'put':'update',
@@ -86,5 +71,3 @@ urlpatterns = [
         }
     )),
 ]
-
-# urlpatterns += router.urls
