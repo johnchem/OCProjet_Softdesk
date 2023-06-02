@@ -1,7 +1,9 @@
 from django.db import models
+from rest_framework import serializers
 
 from project.models import Project
 from authentification.models import User
+
 
 
 class Issues(models.Model):
@@ -32,3 +34,11 @@ class Issues(models.Model):
         auto_now_add=True
     )
 
+class IssuesSerializer(serializers.ModelSerializer):
+    # project_id=ProjectSerializer()
+    # assignee_user_id=UserSerializer()
+    # author_user_id=UserSerializer()
+
+    class Meta:
+        model=Issues
+        fields="__all__"

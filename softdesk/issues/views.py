@@ -2,11 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from issues.models import Issues
+from issues.models import Issues, IssuesSerializer
 from project.models import Project
 from authentification.models import User
 
-from issues.serializers import IssuesSerializer
 
 # Create your views here.
 class IssuesViewset(viewsets.ModelViewSet):
@@ -55,4 +54,5 @@ class IssuesViewset(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         except:
             return Response(issue.errors, status=status.HTTP_204_NO_CONTENT)
+ 
  
