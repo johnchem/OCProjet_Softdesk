@@ -11,7 +11,7 @@ class ProjectForm(forms.ModelForm):
 class ContributorForm(forms.ModelForm):
     class Meta:
         model = Contributor
-        fields = ['user_id']
+        fields = ['project_id', 'user_id', 'role']
         
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
@@ -21,4 +21,4 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(Contributor)
 class ContributorAdmin(admin.ModelAdmin):
     form = ContributorForm
-    list_display = ('user_id', 'project_id', 'role')
+    list_display = ('id', 'user_id', 'project_id', 'role')

@@ -2,7 +2,7 @@ from django.db import models
 from rest_framework import serializers
 
 from authentification.models import User
-from project.models import Contributor
+# from project.models import Contributor
 
 # Create your models here.
 WEB_BACK = 'BACK'
@@ -21,10 +21,10 @@ FUNCTION = [
 ]
 
 TYPE_PROJECT = [
-    (WEB_BACK,'back-end'), 
-    (WEB_FONT,'front-end'),
-    (MOBILE_IOS,'iOS'),
-    (MOBILE_ANDROID,'Android'),
+    (WEB_BACK, 'back-end'), 
+    (WEB_FONT, 'front-end'),
+    (MOBILE_IOS, 'iOS'),
+    (MOBILE_ANDROID, 'Android'),
 ]
 
 class Project(models.Model):
@@ -35,8 +35,8 @@ class Project(models.Model):
         max_length=5,
         choices=TYPE_PROJECT,
         )
-    author_user_id = models.ManyToManyField(
-        to=Contributor,
+    author_user_id = models.ForeignKey(
+        to=User,
         related_name="project_created",
         on_delete=models.CASCADE,
         blank=True,
@@ -68,8 +68,6 @@ class Contributor(models.Model):
 
 class ContributorSerializer(serializers.ModelSerializer):
     permission = serializers.SerializerMethodField('get_permission')
-    
-    # project = ProjectSerializer()
     
     class Meta:
         model = Contributor

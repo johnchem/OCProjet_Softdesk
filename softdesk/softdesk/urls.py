@@ -19,15 +19,22 @@ from rest_framework_nested import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from authentification.views import UserViewset
-from project.views import ProjectViewset, ProjectUserViewset, AdminProjectViewset
+from project.views import ProjectViewset, ProjectUserViewset
 from issues.views import IssuesViewset
 from comments.views import CommentsViewset
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('signup/', UserViewset.as_view({'post': 'create_new_user'})),
     path('login/', TokenObtainPairView.as_view(), name='obtain_tokens'),
     path('login/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
+    path('users/', UserViewset.as_view(
+        {
+            'get': 'list'
+        })),
+    path('signup/', UserViewset.as_view(
+        {
+            'post': 'create_new_user'
+        })),
     path('projects/', ProjectViewset.as_view(
         {
             'post': 'create',
