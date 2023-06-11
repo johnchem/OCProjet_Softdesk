@@ -30,8 +30,8 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model=Comments
         fields=(
-            "issues_id",
             "comment_id",
+            "issues_id",
             "description",
             "author_user_id",
             "created_time",
