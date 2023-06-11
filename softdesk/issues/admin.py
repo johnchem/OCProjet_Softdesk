@@ -12,6 +12,5 @@ class IssuesForm(forms.ModelForm):
         
 @admin.register(Issues)
 class IssuesAdmin(admin.ModelAdmin):
-    class Meta:
-        form=IssuesForm
-        list_display=("issues_id", "title", "project_id", "assignee")
+    form=IssuesForm
+    list_display = ("issues_id", "title", "project_id", "assignee_user_id")
