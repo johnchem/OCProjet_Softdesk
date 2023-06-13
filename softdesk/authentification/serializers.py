@@ -2,10 +2,12 @@ from authentification.models import User
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['user_id', 'first_name', 'last_name', 'email', 'password']
+
 
 class SignUpSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
@@ -18,7 +20,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-        user = User(email=self.validated_data['email'], 
+        user = User(email=self.validated_data['email'],
                     first_name=self.validated_data['first_name'],
                     last_name=self.validated_data['last_name'])
         password = self.validated_data['password']
@@ -28,6 +30,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

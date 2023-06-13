@@ -4,12 +4,14 @@ from comments.models import Comments
 
 # Register your models here.
 
+
 class CommentForm(forms.ModelForm):
     class Meta:
-        model=Comments
+        model = Comments
         fields = "__all__"
+
 
 @admin.register(Comments)
 class CommentsAdmin(admin.ModelAdmin):
-    form=CommentForm
+    form = CommentForm
     list_display = ["comment_id", "description", "author_user_id", "issues_id"]

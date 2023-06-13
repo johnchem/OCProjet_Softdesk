@@ -41,4 +41,6 @@
 `python manage.py runserver`
 
 # Run PEP8 check
-flake8 litreview --format=html --htmldir=flake-report
+les parametres de reglage sont definis dans le fichier `.flake8`
+
+`flake8 softdesk --format=html --htmldir=flake-report`

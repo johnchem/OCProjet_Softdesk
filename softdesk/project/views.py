@@ -87,17 +87,18 @@ class ProjectViewset(viewsets.ModelViewSet):
                 ).filter(
                 role=[AUTHOR, CONTRIBUTOR]
                 )
-            if not request.USER in contributor:
+            if request.USER not in contributor:
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
             serializer = ProjectSerializer(project)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
         except project.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 class ProjectUserViewset(viewsets.ViewSet):
-    permission_classes=[IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def add_collaborator(self, request, pk=None):
         try:
@@ -107,35 +108,36 @@ class ProjectUserViewset(viewsets.ViewSet):
                     "Fonction accessible à l'auteur du projet uniquement",
                     status=status.HTTP_403_FORBIDDEN,
                 )
-            
+
             user = User.objects.get(
                     email=request.POST.get('email')
                 )
             project = Project.objects.get(pk=pk)
             role = "C"
-            
-            contributeur=Contributor.objects.create(
-                user_id = user,
-                project_id = project,
-                role = role,
+
+            contributor = Contributor.objects.create(
+                user_id=user,
+                project_id=project,
+                role=role,
             )
+            contributor.save()
             return Response(
                 "Utilisateur ajouté",
                 status=status.HTTP_201_CREATED
                 )
-        
+
         except Project.DoesNotExist:
             return Response(
                 "le project n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
                 )
+
         except User.DoesNotExist:
             return Response(
                 "l'utilisateur n'est pas enregistré",
                 status=status.HTTP_404_NOT_FOUND
                 )
-        
-        
+
     def list_collaborator(self, request, pk):
         collaborators = User.objects.filter(member_of__project_id=pk)
         if request.user not in [user for user in collaborators]:
@@ -148,10 +150,10 @@ class ProjectUserViewset(viewsets.ViewSet):
             collaborators = Contributor.objects.filter(project_id=project.project_id)
             serializer = ContributorSerializer(collaborators, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
         except Project.DoesNotExist:
             return Response(
-                "le project n'existe pas", 
+                "le project n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
                 )
 
@@ -174,14 +176,9 @@ class ProjectUserViewset(viewsets.ViewSet):
                 "Collabarateur retiré du projet",
                 status=status.HTTP_200_OK
                 )
-        
+
         except Contributor.DoesNotExist:
             return Response(
                 "l'utilisateur ne collabore pas au projet",
                 status=status.HTTP_404_NOT_FOUND
                 )
-
-class AdminProjectViewset(viewsets.ModelViewSet):
-
-    serializer_class = ProjectSerializer
-    queryset = Project.objects.all()

@@ -1,21 +1,17 @@
-from django.contrib.auth import authenticate, login, logout
-from rest_framework import viewsets, permissions, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from django.contrib.auth.models import Group
-
 from authentification.models import User
 from authentification.serializers import (
-    UserSerializer, 
-    GroupSerializer, 
+    UserSerializer,
     SignUpSerializer
-)
-
+    )
 # Create your views here.
+
+
 class UserViewset(viewsets.ModelViewSet):
-    
+
     serializer_class = UserSerializer
 
     def get_queryset(self):
@@ -28,7 +24,7 @@ class UserViewset(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     @action(detail=False, methods=["get"], url_path="users", url_name="users")
     def list_users(self, request, pk=None):
         queryset = self.get_queryset()
