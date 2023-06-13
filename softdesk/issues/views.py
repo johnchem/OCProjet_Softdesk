@@ -56,7 +56,7 @@ class IssuesViewset(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        except project.DoesNotExist:
+        except Project.DoesNotExist:
             return Response(
                 "le project n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
@@ -73,7 +73,7 @@ class IssuesViewset(viewsets.ModelViewSet):
                 )
             return super().list(self, request, pk=None)
 
-        except project.DoesNotExist:
+        except Project.DoesNotExist:
             return Response(
                 "le project n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
@@ -118,7 +118,7 @@ class IssuesViewset(viewsets.ModelViewSet):
             serializer.save(user=request.user)
             return Response(serializer.data)
         
-        except issue.DoesNotExist:
+        except Issues.DoesNotExist:
             return Response(
                 "le problème n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
@@ -150,10 +150,8 @@ class IssuesViewset(viewsets.ModelViewSet):
                 status=status.HTTP_200_OK,
             )
         
-        except issue.DoesNotExist:
+        except Issues.DoesNotExist:
             return Response(
                 "Le problème n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
                 )
-        except:
-            return Response(issue.errors, status=status.HTTP_204_NO_CONTENT)

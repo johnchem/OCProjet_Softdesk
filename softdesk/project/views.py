@@ -124,12 +124,12 @@ class ProjectUserViewset(viewsets.ViewSet):
                 status=status.HTTP_201_CREATED
                 )
         
-        except project.DoesNotExist :
+        except Project.DoesNotExist:
             return Response(
                 "le project n'existe pas",
                 status=status.HTTP_404_NOT_FOUND
                 )
-        except user.DoesNotExist :
+        except User.DoesNotExist:
             return Response(
                 "l'utilisateur n'est pas enregistré",
                 status=status.HTTP_404_NOT_FOUND
@@ -149,7 +149,7 @@ class ProjectUserViewset(viewsets.ViewSet):
             serializer = ContributorSerializer(collaborators, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
-        except project.DoesNotExist:
+        except Project.DoesNotExist:
             return Response(
                 "le project n'existe pas", 
                 status=status.HTTP_404_NOT_FOUND
@@ -175,7 +175,7 @@ class ProjectUserViewset(viewsets.ViewSet):
                 status=status.HTTP_200_OK
                 )
         
-        except collaborator.DoesNotExist:
+        except Contributor.DoesNotExist:
             return Response(
                 "l'utilisateur ne collabore pas au projet",
                 status=status.HTTP_404_NOT_FOUND
