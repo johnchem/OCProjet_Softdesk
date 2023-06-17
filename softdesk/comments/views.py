@@ -24,7 +24,7 @@ class CommentsViewset(viewsets.ModelViewSet):
             if not issue.project_id.project_id == project_pk:
                 return Response(
                     "le problème n'appartient pas à ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             # check if the login user have right to access this endpoint
@@ -51,13 +51,13 @@ class CommentsViewset(viewsets.ModelViewSet):
             if not comment.issues_id.issues_id == issues_pk:
                 return Response(
                     "le commentaire n'appartient pas à ce problème",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             if not issue.project_id.project_id == project_pk:
                 return Response(
                     "le problème n'appartient pas à ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             # check if the login user have right to access this endpoint
@@ -83,7 +83,7 @@ class CommentsViewset(viewsets.ModelViewSet):
             if not issue.project_id.project_id == project_pk:
                 return Response(
                     "le problème n'appartient pas à ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             # check if the login user have right to access this endpoint
@@ -121,13 +121,13 @@ class CommentsViewset(viewsets.ModelViewSet):
             if not comment.issues_id.issues_id == issues_pk:
                 return Response(
                     "le commentaire n'appartient pas à ce problème",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             if not issue.project_id.project_id == project_pk:
                 return Response(
                     "le problème n'appartient pas à ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             # check if the login user have right to access this endpoint
@@ -160,13 +160,20 @@ class CommentsViewset(viewsets.ModelViewSet):
             if not comment.issues_id.issues_id == issues_pk:
                 return Response(
                     "le commentaire n'appartient pas à ce problème",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             if not issue.project_id.project_id == project_pk:
                 return Response(
                     "le problème n'appartient pas à ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # check if the login user have right to access this endpoint
+            if request.user != comment.author_user_id:
+                return Response(
+                    "vous n'êtes pas l'auteur du commentaire",
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
 
             comment.delete()

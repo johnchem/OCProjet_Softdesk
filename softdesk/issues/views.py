@@ -51,10 +51,16 @@ class IssuesViewset(viewsets.ModelViewSet):
             )
 
             if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
 
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+                )
 
         except Project.DoesNotExist:
             return Response(
@@ -91,23 +97,25 @@ class IssuesViewset(viewsets.ModelViewSet):
 
             # check if the login user have right to access this endpoint
             project = Project.objects.get(pk=project_pk)
-            project_author = project.author_user_id
-            issue_responsible = issue.assignee_user_id
-            if request.user not in [project_author, issue_responsible]:
+            issue_author = issue.author_user_id
+            if request.user != issue_author:
                 return Response(
-                    "vous n'êtes pas responsable du problème ou l'auteur du projet",
+                    "vous n'êtes pas l'auteur du projet",
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
             # check if the assignee is contributor
             contributors = Contributor.objects.filter(project_id=project)
+
+            # get assignee name or author by defaut
+            assignee_name = request.POST.get('assignee', request.user.first_name)
             assignee = User.objects.get(
-                first_name=request.POST.get('assignee')
+                first_name=assignee_name
                 )
             if assignee not in [user.user_id for user in contributors]:
                 return Response(
                     "le responsable de la tâche doit être membre de ce projet",
-                    status=status.HTTP_400_BAD_REQUEST,
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
             data = request.data.copy()
             data['assignee_user_id'] = assignee.user_id
@@ -131,16 +139,14 @@ class IssuesViewset(viewsets.ModelViewSet):
             if not issue.project_id.project_id == project_pk:
                 return Response(
                     "le problème n'appartient pas à ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
             # check if the login user have right to access this endpoint
-            project = Project.objects.get(pk=project_pk)
-            project_author = project.author_user_id
-            issue_responsible = issue.assignee_user_id
-            if request.user not in [project_author, issue_responsible]:
+            issue_author = issue.author_user_id
+            if request.user != issue_author:
                 return Response(
-                    "vous n'êtes pas responsable du problème ou l'auteur du projet",
+                    "vous n'êtes pas l'auteur du projet",
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 

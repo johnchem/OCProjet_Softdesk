@@ -27,7 +27,8 @@ class ProjectViewset(viewsets.ModelViewSet):
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_400_BAD_REQUEST
+                )
         project = serializer.save()
         contributor = ContributorSerializer(
             data={
@@ -42,16 +43,25 @@ class ProjectViewset(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
                 )
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED
+            )
 
     def update(self, request, pk):
         try:
             project = Project.objects.get(pk=pk)
-            if request.USER.user_id is not project.author_user_id.user_id:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+            if request.user.user_id is not project.author_user_id.user_id:
+                return Response(
+                    "Fonction accessible à l'auteur du projet uniquement",
+                    status=status.HTTP_403_FORBIDDEN
+                    )
 
-        except project.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Project.DoesNotExist:
+            return Response(
+                "le project n'existe pas",
+                status=status.HTTP_404_NOT_FOUND
+                )
 
         serializer = ProjectSerializer(
             project,
@@ -62,22 +72,37 @@ class ProjectViewset(viewsets.ModelViewSet):
         # will raise exception on error. So you don't have implement extra logics
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
-        return Response(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+            )
 
     def delete(self, request, pk):
         try:
             project = Project.objects.get(pk=pk)
-            if request.USER.user_id is not project.author_user_id.user_id:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+            if request.user.user_id is not project.author_user_id.user_id:
+                return Response(
+                    "Fonction accessible à l'auteur du projet uniquement",
+                    status=status.HTTP_403_FORBIDDEN
+                    )
 
             project.delete()
-            return Response(status=status.HTTP_200_OK)
+            return Response(
+                "Le projets et ses problèmes ont bien été supprimés",
+                status=status.HTTP_200_OK
+                )
 
-        except project.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Project.DoesNotExist:
+            return Response(
+                "le project n'existe pas",
+                status=status.HTTP_404_NOT_FOUND
+                )
 
         except:
-            return Response(project.errors, status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                project.errors,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
     def retrieve(self, request, pk=None):
         try:
@@ -87,14 +112,23 @@ class ProjectViewset(viewsets.ModelViewSet):
                 ).filter(
                 role=[AUTHOR, CONTRIBUTOR]
                 )
-            if request.USER not in contributor:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+            if request.user not in contributor:
+                return Response(
+                    "Fonction accessible aux contributeurs du projet uniquement",
+                    status=status.HTTP_403_FORBIDDEN,
+                    )
 
             serializer = ProjectSerializer(project)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+                )
 
-        except project.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Project.DoesNotExist:
+            return Response(
+                "le project n'existe pas",
+                status=status.HTTP_404_NOT_FOUND
+                )
 
 
 class ProjectUserViewset(viewsets.ViewSet):
@@ -149,7 +183,10 @@ class ProjectUserViewset(viewsets.ViewSet):
             project = Project.objects.get(pk=pk)
             collaborators = Contributor.objects.filter(project_id=project.project_id)
             serializer = ContributorSerializer(collaborators, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+                )
 
         except Project.DoesNotExist:
             return Response(
@@ -180,5 +217,5 @@ class ProjectUserViewset(viewsets.ViewSet):
         except Contributor.DoesNotExist:
             return Response(
                 "l'utilisateur ne collabore pas au projet",
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_400_BAD_REQUEST
                 )

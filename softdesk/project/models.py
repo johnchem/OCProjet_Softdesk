@@ -72,7 +72,7 @@ class ContributorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contributor
-        fields = ['user_id', 'project_id', 'role', 'permission']
+        fields = ['user_id', 'project_id', 'role']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
