@@ -33,11 +33,13 @@ class IssuesViewset(viewsets.ModelViewSet):
             data['project_id'] = Project.objects.get(pk=pk).project_id
             data['author_user_id'] = request.user.user_id
 
-            # get the assignee and reject request if he's not contributor
+            # get assignee name or author by defaut
+            assignee_name = request.POST.get('assignee', request.user.first_name)
             assignee = User.objects.get(
-                first_name=request.POST.get('assignee')
+                first_name=assignee_name
                 )
 
+            # the assignee and reject request if he's not contributor
             if assignee not in contributor:
                 return Response(
                     "le responsable de la tâche doit être membre de ce projet",
@@ -70,6 +72,7 @@ class IssuesViewset(viewsets.ModelViewSet):
 
     def list(self, request, pk=None):
         try:
+            # check if the login user have right to access this endpoint
             project = Project.objects.get(pk=pk)
             contributor = Contributor.objects.filter(project_id=project)
             if request.user not in [user.user_id for user in contributor]:
@@ -77,6 +80,7 @@ class IssuesViewset(viewsets.ModelViewSet):
                     "vous n'êtes pas membre de ce projet",
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
+            # return list function of the inherited
             return super().list(self, request, pk=None)
 
         except Project.DoesNotExist:
@@ -104,21 +108,23 @@ class IssuesViewset(viewsets.ModelViewSet):
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
-            # check if the assignee is contributor
-            contributors = Contributor.objects.filter(project_id=project)
-
-            # get assignee name or author by defaut
-            assignee_name = request.POST.get('assignee', request.user.first_name)
-            assignee = User.objects.get(
-                first_name=assignee_name
-                )
-            if assignee not in [user.user_id for user in contributors]:
-                return Response(
-                    "le responsable de la tâche doit être membre de ce projet",
-                    status=status.HTTP_401_UNAUTHORIZED,
-                )
+            # creation of the mutable copy of the request.data
             data = request.data.copy()
-            data['assignee_user_id'] = assignee.user_id
+
+            # check if the assignee is contributor
+            if "assignee" in request.POST:
+                contributors = Contributor.objects.filter(project_id=project)
+                assignee = User.objects.get(
+                    first_name=request.POST.get('assignee')
+                    )
+
+                if assignee not in [user.user_id for user in contributors]:
+                    return Response(
+                        "le responsable de la tâche doit être membre de ce projet",
+                        status=status.HTTP_401_UNAUTHORIZED,
+                    )
+
+                data['assignee_user_id'] = assignee.user_id
 
             # update of the issue
             serializer = IssuesSerializer(issue, data=data, partial=True)

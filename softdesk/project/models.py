@@ -81,11 +81,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         style={'base_template': 'radio.html'}
     )
 
-    contributor = ContributorSerializer(many=True)
+    contributor = ContributorSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
         fields = ['project_id', 'title', 'description', 'type', 'author_user_id', 'contributor']
+        extra_kwargs = {
+            'contributor': {'read_only': True}
+        }
 
     def create(self, validated_data):
         author = self.context['request'].user

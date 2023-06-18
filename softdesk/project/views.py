@@ -29,6 +29,7 @@ class ProjectViewset(viewsets.ModelViewSet):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
                 )
+        # save the project and create a contributor entry for the author
         project = serializer.save()
         contributor = ContributorSerializer(
             data={
@@ -40,8 +41,9 @@ class ProjectViewset(viewsets.ModelViewSet):
         if not contributor.is_valid():
             return Response(
                 contributor.errors,
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+        contributor.save()
 
         return Response(
             serializer.data,
@@ -50,7 +52,8 @@ class ProjectViewset(viewsets.ModelViewSet):
 
     def update(self, request, pk):
         try:
-            project = Project.objects.get(pk=pk)
+            # check the right to access the function
+            project = Project.objects.get(project_id=pk)
             if request.user.user_id is not project.author_user_id.user_id:
                 return Response(
                     "Fonction accessible à l'auteur du projet uniquement",
@@ -68,9 +71,13 @@ class ProjectViewset(viewsets.ModelViewSet):
             data=request.data,
             partial=True
             )
-        # setting raise_exception=True in the serializer's is_valid method
-        # will raise exception on error. So you don't have implement extra logics
-        serializer.is_valid(raise_exception=True)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+                )
+
         serializer.save(user=request.user)
         return Response(
             serializer.data,
@@ -79,7 +86,8 @@ class ProjectViewset(viewsets.ModelViewSet):
 
     def delete(self, request, pk):
         try:
-            project = Project.objects.get(pk=pk)
+            # check the right to access the function
+            project = Project.objects.get(project_id=pk)
             if request.user.user_id is not project.author_user_id.user_id:
                 return Response(
                     "Fonction accessible à l'auteur du projet uniquement",
@@ -106,9 +114,10 @@ class ProjectViewset(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         try:
-            project = Project.objects.get(pk=pk)
+            # check the right to access the function
+            project = Project.objects.get(project_id=pk)
             contributor = Contributor.objects.filter(
-                project_pk=pk
+                project_id=pk
                 ).filter(
                 role=[AUTHOR, CONTRIBUTOR]
                 )
@@ -136,6 +145,7 @@ class ProjectUserViewset(viewsets.ViewSet):
 
     def add_collaborator(self, request, pk=None):
         try:
+            # check the right to access the function
             project = Project.objects.get(pk=pk)
             if not project.author_user_id.user_id == request.user.user_id:
                 return Response(
@@ -143,6 +153,7 @@ class ProjectUserViewset(viewsets.ViewSet):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+            # gaather the data to create the new contributor
             user = User.objects.get(
                     email=request.POST.get('email')
                 )
@@ -173,6 +184,7 @@ class ProjectUserViewset(viewsets.ViewSet):
                 )
 
     def list_collaborator(self, request, pk):
+        # check the right to access the function
         collaborators = User.objects.filter(member_of__project_id=pk)
         if request.user not in [user for user in collaborators]:
             return Response(
@@ -196,6 +208,7 @@ class ProjectUserViewset(viewsets.ViewSet):
 
     def remove_user(self, request, project_pk, pk):
         try:
+            # check the right to access the function
             project = Project.objects.get(pk=project_pk)
             if not project.author_user_id.user_id == request.user.user_id:
                 return Response(

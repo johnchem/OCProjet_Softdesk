@@ -17,7 +17,6 @@ class CommentsViewset(viewsets.ModelViewSet):
         return Comments.objects.filter(issues_id=issues_pk)
 
     def list(self, request, project_pk=None, pk=None):
-
         try:
             # check if the url is correct
             issue = Issues.objects.get(pk=pk)
@@ -94,6 +93,7 @@ class CommentsViewset(viewsets.ModelViewSet):
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
+            # Create a mutable copy of the data and change de instance ref by the id of object
             data = request.data.copy()
             data['issues_id'] = issue.issues_id
             data['author_user_id'] = request.user.user_id
@@ -101,7 +101,10 @@ class CommentsViewset(viewsets.ModelViewSet):
             serializer = self.serializer_class(data=data)
 
             if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
 
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -142,7 +145,13 @@ class CommentsViewset(viewsets.ModelViewSet):
                 data=request.data,
                 partial=True
                 )
-            serializer.is_valid(raise_exception=True)
+
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
+
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -157,6 +166,7 @@ class CommentsViewset(viewsets.ModelViewSet):
             comment = Comments.objects.get(pk=pk)
             issue = comment.issues_id
 
+            # check if the url is correct
             if not comment.issues_id.issues_id == issues_pk:
                 return Response(
                     "le commentaire n'appartient pas à ce problème",

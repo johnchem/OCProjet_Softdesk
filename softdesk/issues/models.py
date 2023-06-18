@@ -49,7 +49,7 @@ class Issues(models.Model):
         )
     project_id = models.ForeignKey(
         to=Project,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="issue",
         related_query_name="issues"
     )
@@ -64,9 +64,9 @@ class Issues(models.Model):
     )
     assignee_user_id = models.ForeignKey(
         to=User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_DEFAULT,
         related_name="responsible_of",
-        # default='',
+        default=author_user_id,
     )
     created_time = models.DateTimeField(
         auto_now_add=True
