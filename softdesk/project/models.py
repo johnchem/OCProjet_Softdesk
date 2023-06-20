@@ -2,6 +2,7 @@ from django.db import models
 from rest_framework import serializers
 
 from authentification.models import User
+# from project.models import Contributor
 
 # Create your models here.
 WEB_BACK = 'BACK'
@@ -20,11 +21,12 @@ FUNCTION = [
 ]
 
 TYPE_PROJECT = [
-    (WEB_BACK,'back-end'), 
-    (WEB_FONT,'front-end'),
-    (MOBILE_IOS,'iOS'),
-    (MOBILE_ANDROID,'Android'),
+    (WEB_BACK, 'back-end'),
+    (WEB_FONT, 'front-end'),
+    (MOBILE_IOS, 'iOS'),
+    (MOBILE_ANDROID, 'Android'),
 ]
+
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)
@@ -40,14 +42,14 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True)
-    
+
     def __str__(self):
         return f"{self.title} - {self.author_user_id}"
 
 
 class Contributor(models.Model):
     user_id = models.ForeignKey(
-        to=User, 
+        to=User,
         on_delete=models.CASCADE,
         related_name="member_of"
         )
@@ -65,35 +67,28 @@ class Contributor(models.Model):
     class Meta:
         unique_together = ('user_id', 'project_id')
 
+
 class ContributorSerializer(serializers.ModelSerializer):
-    permission = serializers.SerializerMethodField('get_permission')
-    
-    # project = ProjectSerializer()
-    
+
     class Meta:
         model = Contributor
-        fields = ['user_id', 'project_id', 'role', 'permission']
-
-    def get_permission(self, instance):
-        if instance.role == "A":
-            return "CRUD"
-        if instance.role == "R":
-            return "RU"
-        if instance.role == "C":
-            return "R"
+        fields = ['user_id', 'project_id', 'role']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
     type = serializers.ChoiceField(
         choices=TYPE_PROJECT,
-        style={'base_template':'radio.html'}
+        style={'base_template': 'radio.html'}
     )
 
-    contributor = ContributorSerializer(many=True)
-    
+    contributor = ContributorSerializer(many=True, read_only=True)
+
     class Meta:
         model = Project
         fields = ['project_id', 'title', 'description', 'type', 'author_user_id', 'contributor']
+        extra_kwargs = {
+            'contributor': {'read_only': True}
+        }
 
     def create(self, validated_data):
         author = self.context['request'].user
