@@ -24,11 +24,17 @@ class Comments(models.Model):
         related_query_name="comments"
     )
     created_time = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
+
     )
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    created_time = serializers.DateTimeField(
+        read_only=True,
+        format="%Y-%m-%d %H/%M/%S",
+    )
+
     class Meta:
         model = Comments
         fields = (

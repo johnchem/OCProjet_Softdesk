@@ -74,7 +74,22 @@ class Issues(models.Model):
 
 
 class IssuesSerializer(serializers.ModelSerializer):
+    created_time = serializers.DateTimeField(
+        read_only=True,
+        format="%Y-%m-%d %H/%M/%S",
+    )
 
     class Meta:
         model = Issues
-        fields = "__all__"
+        fields = [
+            "issues_id",
+            "project_id",
+            "title",
+            "desc",
+            "tag",
+            "priority",
+            "status",
+            "author_user_id",
+            "assignee_user_id",
+            "created_time"
+            ]

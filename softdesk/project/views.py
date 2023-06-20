@@ -1,4 +1,4 @@
-
+from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -117,11 +117,11 @@ class ProjectViewset(viewsets.ModelViewSet):
             # check the right to access the function
             project = Project.objects.get(project_id=pk)
             contributor = Contributor.objects.filter(
-                project_id=pk
+                project_id__project_id=pk
                 ).filter(
-                role=[AUTHOR, CONTRIBUTOR]
+                Q(role=AUTHOR) | Q(role=CONTRIBUTOR)
                 )
-            if request.user not in contributor:
+            if request.user not in [user.user_id for user in contributor]:
                 return Response(
                     "Fonction accessible aux contributeurs du projet uniquement",
                     status=status.HTTP_403_FORBIDDEN,
